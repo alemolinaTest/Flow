@@ -1,18 +1,12 @@
 package com.amolina.weather.climaflow.ui.cities
 
-import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Observer
 import com.amolina.weather.climaflow.data.DataManager
 import com.amolina.weather.climaflow.data.model.db.City
 import com.amolina.weather.climaflow.data.model.db.Location
-import com.amolina.weather.climaflow.rx.AppSchedulerProvider
 import com.amolina.weather.climaflow.rx.SchedulerProvider
-import com.amolina.weather.climaflow.ui.location.LocationProvider
-import com.amolina.weather.climaflow.ui.splash.SplashViewModel
 import io.reactivex.Observable
-import io.reactivex.Scheduler
 import io.reactivex.android.plugins.RxAndroidPlugins
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.schedulers.Schedulers
@@ -23,14 +17,9 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.Mockito.mock
 import org.mockito.MockitoAnnotations
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.doNothing
 
 
-
-
-
-class CitiesViewModelTest{
+class CitiesViewModelTest {
 
     @Mock
     lateinit var dataManager: DataManager
@@ -43,14 +32,15 @@ class CitiesViewModelTest{
     val observer = mock(Observer::class.java) as Observer<List<CitiesItemModel>>
 
 
-
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
 
+        val scheduler = Schedulers.io()
+
         Mockito.`when`(dataManager.allCities).thenReturn(citiesList)
 
-//        Mockito.`when`(scheduleProvider).thenReturn(AppSchedulerProvider())
+        Mockito.`when`(scheduleProvider.ui()).thenReturn(scheduler)
 
         Mockito.`when`(scheduleProvider.io()).thenReturn(Schedulers.io())
 
@@ -65,27 +55,25 @@ class CitiesViewModelTest{
         //Given
 
 
-
         val actionsSubject = PublishSubject.create<CitiesActions>()
 
-        val citiesViewModel = mock(CitiesViewModel::class.java)
+        //val citiesViewModel = mock(CitiesViewModel::class.java)
 
-        //citiesViewModel = CitiesViewModel(dataManager,scheduleProvider)
+        val citiesViewModel = CitiesViewModel(dataManager, scheduleProvider)
 
+        // val  showCities = MutableLiveData<List<CitiesItemModel>>() = MutableLiveData()
         //`when`(citiesViewModel.getAllCities()).thenReturn(emptyList())
         citiesViewModel.showCities.observeForever(observer)
 
-        doNothing().`when`(citiesViewModel).getSearchedCities("SALTA")
+        //   doNothing().`when`(citiesViewModel).getSearchedCities("SALTA")
 
         //When
-        //citiesViewModel.getSearchedCities("SALTA")
+        citiesViewModel.getSearchedCities("SALTA")
 
         //Then
         val uiModel = citiesViewModel.showCities
         assert(uiModel.value?.size != 0)
     }
-
-
 
 
     private val citiesList = Observable.just(
