@@ -1,5 +1,5 @@
 # Flow
-test weather API openweathermap Dagger2, ROOM, AndroidNetworking, DataBinding, ViewModel (MVVM), reactivex
+test Flow Dagger2, ROOM, AndroidNetworking, DataBinding, ViewModel (MVVM), reactivex
 
 Se usa Dagger2 para Dependency Injections
 
